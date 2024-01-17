@@ -5,6 +5,7 @@ from scipy.integrate import odeint
 import plotly.graph_objects as go
 from IPython.display import HTML
 from scipy.optimize import curve_fit
+from wotan import flatten
 
 
 def convert_angle(angle):
@@ -71,6 +72,7 @@ def Solve_Gyro_Forced_XY(time, CI, params, omega_excitation, plot=True):
     V = m * g * h * smp.cos(the)
     L = T - V
     L = L.simplify()
+
     LE1 = smp.diff(L, the) - smp.diff(smp.diff(L, the_d), t)
     LE1 = LE1.simplify()
 
@@ -349,3 +351,21 @@ def Solve_Gyro_Free(time, CI, params, plot=True):
         path = HTML(fig.to_html(default_width=1000, default_height=600))
 
     return the_t, phi_t, psi_t, x_t, y_t, z_t, path
+
+def AmplitudeNutation(time, theta):
+    """
+    *Compute the nutation amplitude.*
+
+    ## Parameters :
+    - time (list or np.array) : time list or np.array corresponding to the signal
+    - theta (list or np.array) : theta angle list or np.array found according to SolveGyroscope
+
+    ## Return :
+    - amplitude (float) : Nutation amplitude
+    """
+
+    signalFlat, _ = flatten(time, theta, 1, method='biweight', return_trend=True) # Compute the trend curve and flat o
+    dsOriginal = np.max(theta) - np.min(theta)
+    dsFlat = np.max(signalFlat) - np.min(signalFlat)
+    
+    return (np.max(signalFlat) - np.min(signalFlat))*dsOriginal/dsFlat
