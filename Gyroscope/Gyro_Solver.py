@@ -352,20 +352,62 @@ def Solve_Gyro_Free(time, CI, params, plot=True):
 
     return the_t, phi_t, psi_t, x_t, y_t, z_t, path
 
-def AmplitudeNutation(time, theta):
+def PlotNutation(time, theta, thetaFlat, nutation):
+    plt.figure(figsize=(9, 3), dpi = 300)
+    plt.subplot(1,2,1)
+    plt.plot(time, theta)
+    plt.plot(time, thetaFlat, linestyle = "--")
+    plt.subplot(1,2,2)
+    plt.plot(time, nutation)
+    plt.show()
+
+
+def Nutation(time, theta, free, window_length = 20 , polyorder = 2,  plot = False, data = False):
     """
-    *Compute the nutation amplitude.*
+    Compute the nutation and its amplitude. This function is a wrapping of 'scipy.signal.savgol_filter'
 
     ## Parameters :
-    - time (list or np.array) : time list or np.array corresponding to the signal
-    - theta (list or np.array) : theta angle list or np.array found according to SolveGyroscope
+    time : list or numpy.array (1D)
+        Range of time. Same size than `theta` 
+    theta : list or numpy.array (1D)
+        Theta angle. Same size than `time`
+    free : bool :
+        `True` if the gyroscope has a free motion, False otherwise 
+    window_length : int, optional
+        The length of the filter window (i.e., the number of coefficients).
+    polyorder : int, optional
+        The order of the polynomial used to fit the samples. polyorder must be less than `window_length`.
+    plot : bool, optional
+        If `True`, nutation graph is plotted
+    data : bool, , optional
+        If `True`, the function return the nutation angle and the time range
 
     ## Return :
-    - amplitude (float) : Nutation amplitude
+    amplitudeNutation : float : 
+        Nutation amplitude (maximum - minimum)
+    time : list or numpy.array (1D)
+        Range of time.
+    nutation : numpy.array (1D)
+        Nutation angle
     """
 
-    signalFlat, _ = flatten(time, theta, 1, method='biweight', return_trend=True) # Compute the trend curve and flat o
-    dsOriginal = np.max(theta) - np.min(theta)
-    dsFlat = np.max(signalFlat) - np.min(signalFlat)
+    if free:
+        if plot:
+            PlotNutation(time, theta, np.mean(theta) + np.zeros(time.shape), theta)
+        if data:
+            return time, theta
     
-    return (np.max(signalFlat) - np.min(signalFlat))*dsOriginal/dsFlat
+        return np.max(theta) - np.min(theta)
+         
+
+    thetaFlat = sgn.savgol_filter(theta, window_length, polyorder)
+    nutation = theta - thetaFlat
+    amplitudeNutation = np.max(nutation) - np.min(nutation)
+
+    if plot:
+        PlotNutation(time, theta, thetaFlat, nutation)
+        
+    if data:
+        return time, nutation
+    
+    return amplitudeNutation
