@@ -5,7 +5,17 @@ from scipy.integrate import odeint
 import plotly.graph_objects as go
 from IPython.display import HTML
 from scipy.optimize import curve_fit
-
+import matplotlib.animation as animation
+from matplotlib.animation import PillowWriter
+from matplotlib.patches import FancyArrowPatch
+from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.patches import FancyArrowPatch
+from mpl_toolkits.mplot3d import proj3d
+from matplotlib.animation import FuncAnimation, PillowWriter
+from mpl_toolkits.mplot3d.proj3d import proj_transform
+from matplotlib.animation import FuncAnimation, FFMpegWriter
+import scipy.signal as sgn
 
 def convert_angle(angle):
     return np.mod(angle, 2 * np.pi) * 180 / np.pi
@@ -385,6 +395,31 @@ def Get_Gyro_Position(t2, params_f, CI, omega_f, t1=20):
     PHI = np.concatenate((phi_f, phi_t_lib))
 
     X = np.sin(PHI) * np.sin(THETA)
+    Y = -np.cos(PHI) * np.sin(THETA)
+    Z = np.cos(THETA)
+
+    return T, X, Y, Z
+
+
+def Get_Gyro_Position_X_Only(t2, params_f, CI, omega_f, t1=20):
+
+    T1 = np.linspace(0, t1, 1000, endpoint=True)
+    T2 = np.linspace(0, t2, 1000, endpoint=True) + t1
+
+    the_f, phi_f, psi_f,theD_f, phiD_f, psiD_f, path_f = Solve_Gyro_Forced_X(T1, CI, params_f,
+                                                                              omega_excitation=omega_f, plot=False)
+
+    params_lib = params_f[:-1]
+        
+    the_t_lib, phi_t_lib, psi_t_lib, x_t_lib, y_t_lib, z_t_lib, path_lib = Stop_Forcing(t2, the_f, phi_f, psi_f,
+                        theD_f, phiD_f, psiD_f, params_lib)
+
+    T = np.concatenate((T1, T2))
+    THETA = np.concatenate((the_f, the_t_lib))
+    PSI = np.concatenate((psi_f, psi_t_lib))
+    PHI = np.concatenate((phi_f, phi_t_lib))
+
+    X = np.sin(PHI) * np.sin(THETA) - 0.4 * np.cos(omega_f*T)
     Y = -np.cos(PHI) * np.sin(THETA)
     Z = np.cos(THETA)
 
