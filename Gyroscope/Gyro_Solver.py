@@ -5,7 +5,7 @@ from scipy.integrate import odeint
 import plotly.graph_objects as go
 from IPython.display import HTML
 from scipy.optimize import curve_fit
-from wotan import flatten
+import scipy.signal as sgn
 
 
 def convert_angle(angle):
