@@ -32,7 +32,7 @@ def Get_frequency(t, angle, freq0, angle0):
     return freq, phi0
 
 
-def Solve_Gyro_Forced_XY(time, CI, params, omega_excitation, plot=True):
+def Solve_Gyro_Forced_XY(time, CI, params, omega_excitation, plot=True, initial_phase=0):
     t, h, g, m, x0, w = smp.symbols("t h g m x_0 w", real=True)
     the, phi, psi = smp.symbols(r"\theta \phi \psi", cls=smp.Function)
     the = the(t)
@@ -60,7 +60,7 @@ def Solve_Gyro_Forced_XY(time, CI, params, omega_excitation, plot=True):
 
     R = R1 * R2 * R3
     xc = h * R @ smp.Matrix([0, 0, 1]) + smp.Matrix(
-        [x0 * smp.cos(w * t), x0 * smp.sin(w * t), 0]
+        [x0 * smp.cos(w * t + initial_phase), x0 * smp.sin(w * t + initial_phase), 0]
     )
     vc = smp.diff(xc, t)
     vc_carre = vc.T.dot(vc).simplify()
@@ -376,13 +376,13 @@ def Stop_Forcing(t2, theta, phi, psi, theta_D, phi_D, psi_D, params_lib, t1=20):
     return Solve_Gyro_Free(t, CI, params_lib, plot=False)    
 
 
-def Get_Gyro_Position(t2, params_f, CI, omega_f, t1=20):
+def Get_Gyro_Position(t2, params_f, CI, omega_f, t1=20, xchi=0):
 
     T1 = np.linspace(0, t1, 1000, endpoint=True)
     T2 = np.linspace(0, t2, 1000, endpoint=True) + t1
 
     the_f, phi_f, psi_f,theD_f, phiD_f, psiD_f, path_f = Solve_Gyro_Forced_XY(T1, CI, params_f,
-                                                                              omega_excitation=omega_f, plot=False)
+                                                                              omega_excitation=omega_f, plot=False, initial_phase=xchi)
 
     params_lib = params_f[:-1]
         
@@ -401,13 +401,13 @@ def Get_Gyro_Position(t2, params_f, CI, omega_f, t1=20):
     return T, X, Y, Z
 
 
-def Get_Gyro_Position_X_Only(t2, params_f, CI, omega_f, t1=20):
+def Get_Gyro_Position_X_Only(t2, params_f, CI, omega_f, t1=20, xchi=0):
 
     T1 = np.linspace(0, t1, 1000, endpoint=True)
     T2 = np.linspace(0, t2, 1000, endpoint=True) + t1
 
     the_f, phi_f, psi_f,theD_f, phiD_f, psiD_f, path_f = Solve_Gyro_Forced_X(T1, CI, params_f,
-                                                                              omega_excitation=omega_f, plot=False)
+                                                                              omega_excitation=omega_f, plot=False, initial_phase=xchi)
 
     params_lib = params_f[:-1]
         
@@ -425,8 +425,32 @@ def Get_Gyro_Position_X_Only(t2, params_f, CI, omega_f, t1=20):
 
     return T, X, Y, Z
 
+def Get_Gyro_Position_Rotating(t2, params_f, CI, omega_f, t1=20, xchi=0):
 
-def Solve_Gyro_Forced_X(time, CI, params, omega_excitation, plot=True):
+    T1 = np.linspace(0, t1, 1000, endpoint=True)
+    T2 = np.linspace(0, t2, 1000, endpoint=True) + t1
+
+    the_f, phi_f, psi_f,theD_f, phiD_f, psiD_f, path_f = Solve_Gyro_Forced_XY(T1, CI, params_f,
+                                                                              omega_excitation=omega_f, plot=False, initial_phase=xchi)
+
+    params_lib = params_f[:-1]
+        
+    the_t_lib, phi_t_lib, psi_t_lib, x_t_lib, y_t_lib, z_t_lib, path_lib = Stop_Forcing(t2, the_f, phi_f, psi_f,
+                        theD_f, phiD_f, psiD_f, params_lib)
+
+    T = np.concatenate((T1, T2))
+    THETA = np.concatenate((the_f, the_t_lib))
+    PSI = np.concatenate((psi_f, psi_t_lib))
+    PHI = np.concatenate((phi_f, phi_t_lib))
+
+    X = np.sin(THETA)
+    Y = - np.sin(THETA)
+    Z = np.cos(THETA)
+
+    return T, X, Y, Z
+
+
+def Solve_Gyro_Forced_X(time, CI, params, omega_excitation, plot=True, initial_phase=0):
     t, h, g, m, x0, w = smp.symbols("t h g m x_0 w", real=True)
     the, phi, psi = smp.symbols(r"\theta \phi \psi", cls=smp.Function)
     the = the(t)
@@ -454,7 +478,7 @@ def Solve_Gyro_Forced_X(time, CI, params, omega_excitation, plot=True):
 
     R = R1 * R2 * R3
     xc = h * R @ smp.Matrix([0, 0, 1]) + smp.Matrix(
-        [x0 * smp.cos(w * t), 0, 0]
+        [x0 * smp.cos(w * t + initial_phase), 0, 0]
     )
     vc = smp.diff(xc, t)
     vc_carre = vc.T.dot(vc).simplify()
