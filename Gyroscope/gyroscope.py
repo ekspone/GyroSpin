@@ -447,6 +447,13 @@ def ChangeForcing(CI, params, listForcing, timeSettings):
     return solution
 ###### IN PROGRESS (MABYE A PROBLEM IN THE JUnCTION) #####
 
+def Stop_Forcing(t2, theta, phi, psi, theta_D, phi_D, psi_D, params_lib, t1=20):
+    CI = [theta[-1], theta_D[-1], phi[-1], phi_D[-1], psi[-1], psi_D[-1]]
+
+    t = np.linspace(0, t2, 1000, endpoint=True) + t1
+
+    return Solve_Gyro_Free(t, CI, params_lib, plot=False)    
+
 
 def Get_Gyro_Position(t2, params_f, CI, t1=20):
     """
