@@ -165,6 +165,25 @@ def EulerLagrange(lagrangian, genCoordinate, genSpeed, time):
     """
     return smp.diff(lagrangian, genCoordinate) - smp.diff(smp.diff(lagrangian, genSpeed), time).simplify()
 
+def MergeDicts(list_of_dicts):
+    result_dict = {}
+    for d in list_of_dicts:
+        result_dict.update(d)
+    return result_dict
+
+def GenMomentum(lagrangian, genCoordinate, genSpeed, mode = "equation"):
+    momentumName = smp.symbols('p_{}'.format(genCoordinate.name))
+    if mode == "name":
+        return momentumName
+    
+    momentum = smp.diff(lagrangian, genSpeed)
+    return momentumName - momentum
+
+def Hamiltonian(lagrangian, genCoordinates, genSpeeds):
+    n = len(genCoordinates)
+    rules = MergeDicts(sum([smp.solve(GenMomentum(lagrangian, genCoordinates[i], genSpeeds[i]), genSpeeds[i], dict=True) for i in range(n)], []))
+    return (sum([GenMomentum(lagrangian, genCoordinates[i], genSpeeds[i], mode="name") * genSpeeds[i] for i in range(n)]) - lagrangian).xreplace(rules)  
+
 
 def PlottingGyroscope(time, theta, phi, x, y, z):
 
