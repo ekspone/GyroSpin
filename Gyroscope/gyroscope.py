@@ -555,6 +555,32 @@ def Get_Gyro_Position(t1, t2, CI, params, bool_plot=False):
 
     return T, X, Y, Z, THETA, PHI, PSI
 
+def Get_Gyro_Position_X(t1, t2, CI, params, bool_plot=False):
+    """
+    Compute the position of the in the cartesian coordinate system
+    """
+    T1 = np.linspace(0, t1, 1000, endpoint=True)
+    T2 = np.linspace(0, t2, 1000, endpoint=True) + t1
+
+    the_f, phi_f, psi_f, theD_f, phiD_f, psiD_f, _, _, _, path_f = Solve_Gyro_Forced_X(
+        T1, CI, params, plot=bool_plot
+    )
+
+    the_t_lib, phi_t_lib, psi_t_lib, x_t_lib, y_t_lib, z_t_lib, _, _, _, path_lib = Stop_Forcing(
+        t1, t2, the_f, phi_f, psi_f, theD_f, phiD_f, psiD_f, params, bool_plot
+    )
+
+    T = np.concatenate((T1, T2))
+    THETA = np.concatenate((the_f, the_t_lib))
+    PSI = np.concatenate((psi_f, psi_t_lib))
+    PHI = np.concatenate((phi_f, phi_t_lib))
+
+    X = np.sin(PHI) * np.sin(THETA)
+    Y = -np.cos(PHI) * np.sin(THETA)
+    Z = np.cos(THETA)
+
+    return T, X, Y, Z, THETA, PHI, PSI
+
 
 def PlotNutation(time, theta, thetaFlat, nutation):
     """
