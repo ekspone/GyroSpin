@@ -85,11 +85,11 @@ def MatrixBasisChange(theta, phi, psi):
     Compute the matrix of base change from the cartesian coordinate to the Euler angle coordinate
 
     ## Pamameters
-    `theta` : list or np.array
+    `theta` : sympy.Symbol
         Theta angle value across time 
-    `phi` : list or np.array
+    `phi` : sympy.Symbol
         Phi angle value across time 
-    `psi` : list or np.array
+    `psi` : sympy.Symbol
         Psi angle value across time 
 
 
