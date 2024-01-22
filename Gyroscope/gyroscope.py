@@ -124,7 +124,7 @@ def ParametersDefinition():
 
     """
 
-    t, h, g, m, x0, w, J1, J3 = smp.symbols(r't h g m x_0, \omega, J_1, J_3', real=True)
+    t, h, g, m, x0, p, w, J1, J3 = smp.symbols(r't h g m x_0 \Phi \omega, J_1, J_3', real=True)
     the, phi, psi = smp.symbols(r'\theta \phi \psi', cls=smp.Function)
 
     # Function
@@ -142,7 +142,7 @@ def ParametersDefinition():
     phi_dd = smp.diff(phi_d,t)
     psi_dd = smp.diff(psi_d,t)
 
-    return t, h, g, m, x0, w, J1, J3, the, phi, psi, the_d, phi_d, psi_d, the_dd, phi_dd, psi_dd
+    return t, h, g, m, x0, p, w, J1, J3, the, phi, psi, the_d, phi_d, psi_d, the_dd, phi_dd, psi_dd
 
 
 def EulerLagrange(lagrangian, genCoordinate, genSpeed, time):
@@ -497,6 +497,7 @@ def Solve_Gyro_Forced_Y(time, CI, params, plot=True, numbers=True):
 
 
 ###### IN PROGRESS (MABYE A PROBLEM IN THE JUnCTION) #####
+'''
 def SwitchForcing(solution, newForcing, newTimeArray, params):
     the_t, phi_t, phi_t, the_t_d, phi_t_d, psi_t_d, _, _, _, _ = solution
     newCI = [the_t[-1], phi_t[-1], phi_t[-1], the_t_d[-1], phi_t_d[-1], psi_t_d[-1]]
@@ -514,7 +515,7 @@ def ChangeForcing(CI, params, listForcing, timeSettings):
         solution = SwitchForcing(solution, listForcing[i], timeSettings[i], params)
 
     return solution
-
+'''
 
 ###### IN PROGRESS (MABYE A PROBLEM IN THE JUnCTION) #####
 
@@ -523,7 +524,7 @@ def Stop_Forcing(t1, t2, theta, phi, psi, theta_D, phi_D, psi_D, params, bool_pl
     
     CI = [theta[-1], theta_D[-1], phi[-1], phi_D[-1], psi[-1], psi_D[-1]]
 
-    t = np.linspace(0, t2, 10000, endpoint=True)
+    t = np.linspace(0, t2, 1000, endpoint=True)
 
     return Solve_Gyro_Free(t, CI, params, plot=bool_plot)
 
@@ -532,8 +533,8 @@ def Get_Gyro_Position(t1, t2, CI, params, bool_plot=False):
     """
     Compute the position of the in the cartesian coordinate system
     """
-    T1 = np.linspace(0, t1, 10000, endpoint=True)
-    T2 = np.linspace(0, t2, 10000, endpoint=True) + t1
+    T1 = np.linspace(0, t1, 1000, endpoint=True)
+    T2 = np.linspace(0, t2, 1000, endpoint=True) + t1
 
     the_f, phi_f, psi_f, theD_f, phiD_f, psiD_f, _, _, _, path_f = Solve_Gyro_Forced_XY(
         T1, CI, params, plot=bool_plot
@@ -552,7 +553,7 @@ def Get_Gyro_Position(t1, t2, CI, params, bool_plot=False):
     Y = -np.cos(PHI) * np.sin(THETA)
     Z = np.cos(THETA)
 
-    return T, X, Y, Z
+    return T, X, Y, Z, THETA, PHI, PSI
 
 
 def PlotNutation(time, theta, thetaFlat, nutation):
