@@ -654,3 +654,46 @@ def Nutation(time, theta, free, window_length=20, polyorder=2, plot=False, data=
         return time, nutation
 
     return amplitudeNutation
+
+def Demo(dt1, dt2, dt3, dt4, params, CI, p1, p2, bool_plot=False):
+
+    params[-2] = p1
+    
+    T1 = np.linspace(0, dt1, 1000, endpoint=True)
+    T2 = np.linspace(0, dt2, 1000, endpoint=True) 
+    T3 = np.linspace(0, dt3, 1000, endpoint=True) 
+    T4 = np.linspace(0, dt4, 1000, endpoint=True)
+    
+    the_1, phi_1, psi_1, theD_1, phiD_1, psiD_1, x_1, y_1, z_1, _ = Solve_Gyro_Forced_X(
+        T1, CI, params, plot=bool_plot
+    )
+
+    CI2 = [the_1[-1], theD_1[-1], phi_1[-1], phiD_1[-1], psi_1[-1], psiD_1[-1]]
+    
+    the_2, phi_2, psi_2, theD_2, phiD_2, psiD_2, x_2, y_2, z_2, _ = Solve_Gyro_Free(
+        T2, CI2, params, plot=bool_plot
+    )
+
+    CI3 = [the_2[-1], theD_2[-1], phi_2[-1], phiD_2[-1], psi_2[-1], psiD_2[-1]]
+    params[-2] = p2
+    
+    the_3, phi_3, psi_3, theD_3, phiD_3, psiD_3, x_3, y_3, z_3, _ = Solve_Gyro_Forced_X(
+        T3, CI3, params, plot=bool_plot
+    )
+
+    CI4 = [the_3[-1], theD_3[-1], phi_3[-1], phiD_3[-1], psi_3[-1], psiD_3[-1]]
+    
+    _, _, _, _, _, _, x_4, y_4, z_4, _ = Solve_Gyro_Free(
+        T4, CI4, params, plot=bool_plot
+    )
+
+    T2 = T2 + dt1
+    T3 = T3 + dt2
+    T4 = T4 + dt3
+
+    T = np.concatenate((T1, T2, T3, T4))
+    X = np.concatenate((x_1, x_2, x_3, x_4))
+    Y = np.concatenate((y_1, y_2, y_3, y_4))
+    Z = np.concatenate((z_1, z_2, z_3, z_4))
+
+    return T, X, Y, Z
