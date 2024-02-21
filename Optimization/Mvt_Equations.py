@@ -197,7 +197,7 @@ def Solve_Gyro_Free_Fast(t1, t2, CI, params, solving_method='RK23'):
     
     g, m, h, J1, J3, x0, p, w = params
     ans = solve_ivp(dSdt_free_IVP, t_span=(t1, t2), y0=CI, args=(g, m, h, J1, J3), method=solving_method)
-    the_t, phi_t, phi_t, the_t_d, phi_t_d, psi_t_d = ans.y
+    the_t, phi_t, psi_t, the_t_d, phi_t_d, psi_t_d = ans.y
     t = ans.t
     
     return t, the_t, phi_t, psi_t, the_t_d, phi_t_d, psi_t_d
@@ -228,7 +228,7 @@ def Solve_Gyro_Forced_Fast(t1, t2, CI, params, solving_method='RK23'):
     g, m, h, J1, J3, x0, p, w = params
     w = 2 * np.pi * w
     ans = solve_ivp(dSdt_forced_IVP, t_span=(t1, t2), y0=CI, args=(g, m, h, J1, J3, x0, p, w), method=solving_method)
-    the_t, phi_t, phi_t, the_t_d, phi_t_d, psi_t_d = ans.y
+    the_t, phi_t, psi_t, the_t_d, phi_t_d, psi_t_d = ans.y
     t = ans.t
     
     return t, the_t, phi_t, psi_t, the_t_d, phi_t_d, psi_t_d
@@ -406,7 +406,26 @@ def Plot_Gyro_Path(the, phi):
     return path
 
 
+def Rabi_Chevron(exc_freq, tab_t_burst, params, CI, solving_method='RK23'):
 
+    list_the = []
+    list_t = []
+    tab_theta = np.zeros( (len(exc_freq), len(tab_t_burst)) )
+    
+    for i in range(len(exc_freq)):
+        
+        params[-1] = exc_freq[i]
+        
+        for j in range(len(tab_t_burst)):
+            tf = tab_t_burst[j]
+            t, theta, _, _, _, _, _ = Solve_Gyro_Forced_Fast(0, tf, CI, params, solving_method=solving_method)
+            tab_theta[i, j] = theta[-1]
+            list_the.append(theta)
+            list_t.append(t)
+
+            
+    
+    return tab_theta, list_the, list_t
     
 
 
