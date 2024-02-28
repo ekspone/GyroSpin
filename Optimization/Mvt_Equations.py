@@ -310,6 +310,30 @@ def Frequency_Sweep(f1, f2, step_f, params, tf=80 , CI = [np.pi / 12, 0, 0, 0, 0
     
     return f_max, exc_freq, tab_theta, tab_theta_max, tab_t
 
+def Frequency_Sweep_MIN(f1, f2, step_f, params, tf=80 , CI = [np.pi / 12, 0, 0, 0, 0, 2*np.pi*200], solving_method='RK23', plot=True):
+    exc_freq = Frequency_array(f1, f2, step_f)
+    tab_theta = []
+    tab_theta_min = []
+    tab_t = []
+    
+    for f in exc_freq:
+        params[-1] = f
+        t, theta, _, _, _, _, _ = Solve_Gyro_Forced_Fast(0, tf, CI, params, solving_method=solving_method)
+        tab_theta_min.append( np.min(theta) * 180 / np.pi )
+        tab_theta.append(theta)
+        tab_t.append(t)
+    
+    f_max = exc_freq[tab_theta_min == np.min(tab_theta_min)]
+    tab_theta_min = np.array(tab_theta_min)
+
+    if plot:
+        plt.figure()
+        plt.scatter(exc_freq, tab_theta_min, marker='o')
+        plt.xlabel(r"$f \; (\mathrm{Hz})$")
+        plt.ylabel(r"$\theta_\mathrm{max} \; (\mathrm{deg})$")
+    
+    return f_max, exc_freq, tab_theta, tab_theta_min, tab_t
+
 
 def Amplitude_Sweep(x1, x2, step_x, params, tf=350 , CI = [np.pi / 24, 0, 0, 0, 0, 2*np.pi*200], solving_method='RK23', plot=True):
     exc_x = Amplitude_array(x1, x2, step_x) * 1e-2
