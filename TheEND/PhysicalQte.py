@@ -1,0 +1,133 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import sympy as smp
+from scipy.integrate import odeint, solve_ivp
+import plotly.graph_objects as go
+from IPython.display import HTML
+
+def Gyro_Bloch(the, phi, psi):
+    '''Sam's work. Unitary sphere, Sphère de Bloch'''
+
+    x = np.sin(phi) * np.sin(the)
+    y = -np.cos(phi) * np.sin(the)
+    z = np.cos(the)
+
+    return x, y, z
+
+
+def Momentum_Weight(the, phi, psi, params):
+    '''Moment associé au poids.'''
+    g, m = params[0], params[1]
+    momentum_the = m*g*np.sin(the)
+
+    return momentum_the
+
+
+def Momentum_Fe(the, phi, psi, params):
+    '''Moment associé à la force centrifuge.'''
+    m, x0, p, f = params[0], params[-3], params[-2], params[-1]
+    w = 2*np.pi*f
+    momentum_the = - m*x0*(w**2)*np.sin(w*t+p-phi)*np.cos(the)
+    momentum_phi = m*x0*(w**2)*np.cos(w*t+p-phi)*np.sin(the)
+    
+    return momentum_the, momentum_phi
+
+
+def Conjugated_Momentums(the, phi, psi, the_d, phi_d, psi_d, params):
+    '''Moments conjugés.'''
+    m, h, J1, J3 = params[1],  params[2], params[3],  params[4]
+    J1_ = J1 + m*(h**2)
+    w = 2*np.pi*f
+    p_psi = J3 * (psi_d + phi_d*np.cos(the))
+    p_phi = J1_ * (np.sin(the)**2) * phi_d + np.cos(the)*p_psi
+    p_the = J1_ * the_d
+    return p_the, p_phi, p_psi
+
+
+def p_psi_exp(params, CI):
+    '''Calcule le P_psi initial.'''
+    J3 = params[-4]
+    p_psi0 = (CI[-1] + np.cos(CI[0]) * CI[-3]) * J3
+    return p_psi0
+
+
+def Get_Path(t, the, phi, psi):
+    '''Génére la trajectoire du Gyro.'''
+
+    x_t, y_t, z_t = Gyro_Bloch(the, phi, psi)
+    
+    i = 0
+    f = len(t)
+
+    layout = go.Layout(
+        title=r"Plot Title",
+        scene=dict(
+            xaxis_title=r"x",
+            yaxis_title=r"y",
+            zaxis_title=r"z",
+            aspectratio=dict(x=1, y=1, z=1),
+            camera_eye=dict(x=1.2, y=1.2, z=1.2),
+        ),
+    )
+
+    fig = go.Figure(layout=layout)
+    fig.add_scatter3d(x=[0], y=[0], z=[0])
+    fig.add_scatter3d(
+        x=x_t[i:f],
+        y=y_t[i:f],
+        z=z_t[i:f],
+        mode="lines",
+        line=dict(color="green", width=2),
+    )
+
+    fig.update_layout(
+        scene=dict(
+            xaxis=dict(
+                range=[-1, 1],
+            ),
+            yaxis=dict(
+                range=[-1, 1],
+            ),
+            zaxis=dict(
+                range=[-1, 1],
+            ),
+        )
+    )
+
+    path = HTML(fig.to_html(default_width=1000, default_height=600))
+    return path
+
+
+def Gyro_Carac_Values(params, CI):
+    '''Calcule les fréquences et pulsations théoriques attendues'''
+    p_psi0 = p_psi_exp(params, CI)
+    m, h, x0, p, f = params[1], params[2], params[-3], params[-2], params[-1]
+    omega_f = 2 * np.pi * f
+
+    omega_L_th = m * g * h / (p_psi0)
+    print(f'Larmor Pulsation (th) : {omega_L_th : >+20_.3f}')
+    print(f'Larmor Frequency (th) : {omega_L_th/(2*np.pi) : >+20_.3f}')
+    print(f'Larmor Period (th) : {2 * np.pi / omega_L_th : >+20_.3f} \n')
+    
+    omega_R_th = -0.5 * np.cos(p) * (m * h * x0 * (omega_f**2)) / p_psi0
+    #omega_R_th = -0.5 * np.cos(params_f[-2]) * ( (m*h)**3 * g**2 * x0) / (p_psi_exp**3)
+    
+    print(f'Rabi Frequency (th) : {omega_R_th : >+20_.3f}')
+    print(f'Rabi Period (th) : {2 * np.pi / omega_R_th : >+20_.3f}')
+    print(f'Temps de montée (th) : {np.pi / omega_R_th : >+20_.3f} \n')
+    
+    
+    rapport_freq = float(omega_L_th / omega_R_th)
+    print(f'Rapport des pulsations Larmor/Rabi : {rapport_freq : >+20_.3f} \n')
+        
+    print(f'Rapport Approx Gyroscopique : {0.5 * J3 * (omega_f**2) /  (m*g*h) : >+20_.3f} \n')
+    
+    return None
+
+
+# Rappel : g, m, h, J1, J3, x0, p, w = params
+
+
+
+
+
