@@ -131,7 +131,7 @@ def Frequency_Sweep_MAX(exc_freq, params, CI, tf=80, solving_method='RK23', plot
     
     for f in exc_freq:
         params[-1] = f
-        t, theta, _, _, _, _, _ = Solve_Gyro_Forced_Fast(0, tf, CI, params, solving_method=solving_method,forcing=forcing)
+        t, theta, _, _, _, _, _ = Solve_Gyro(0, tf, CI, params, solving_method=solving_method, forcing=forcing)
         tab_theta_max.append( np.max(theta) * 180 / np.pi )
         tab_theta.append(theta)
         tab_t.append(t)
@@ -150,4 +150,73 @@ def Frequency_Sweep_MAX(exc_freq, params, CI, tf=80, solving_method='RK23', plot
     return f_max, exc_freq, tab_theta, tab_theta_max, tab_t
 
 
+def Plot_Gyro_Angles(t, the, phi, psi):
+    '''Sam's work.'''
 
+    plt.figure(figsize=[16, 5])
+    plt.subplot(1,3,1)
+    plt.plot(t, the * 180 / np.pi)
+    plt.xlabel(r'$t \;(s)$')
+    plt.ylabel(r'$\theta \; (\text{deg})$')
+    
+    plt.subplot(1,3,2)
+    plt.title(r"Angles d'Euler en fonction du temps")
+    plt.plot(t, phi * 180 / np.pi)
+    plt.xlabel(r'$t \;(s)$')
+    plt.ylabel(r'$\phi \; (\text{deg})$')
+    
+    plt.subplot(1,3,3)
+    plt.plot(t, psi * 180 / np.pi)
+    plt.xlabel(r'$t \;(s)$')
+    plt.ylabel(r'$\psi \; (\text{deg})$')
+    plt.show()
+
+    return None
+
+
+def Plot_Gyro_Speed_Angles(t, the_d, phi_d, psi_d):
+    '''Sam's work.'''
+
+    plt.figure(figsize=[16, 5])
+    plt.subplot(1,3,1)
+    plt.plot(t, the_d * 180 / np.pi)
+    plt.xlabel(r'$t \;(s)$')
+    plt.ylabel(r'$\dot{\theta} \; (\text{deg})$')
+    
+    plt.subplot(1,3,2)
+    plt.title(r"Dérivées temporelles des angles d'Euler en fonction du temps")
+    plt.plot(t, phi_d * 180 / np.pi)
+    plt.xlabel(r'$t \;(s)$')
+    plt.ylabel(r'$\dot{\phi} \; (\text{deg})$')
+    
+    plt.subplot(1,3,3)
+    plt.plot(t, psi_d * 180 / np.pi)
+    plt.xlabel(r'$t \;(s)$')
+    plt.ylabel(r'$\dot{\psi} \; (\text{deg})$')
+    plt.show()
+
+    return None
+
+
+def Plot_Gyro_Momentum(t, p_the, p_phi, p_psi):
+    '''Sam's work.'''
+
+    plt.figure(figsize=[16, 5])
+    plt.subplot(1,3,1)
+    plt.plot(t, p_the)
+    plt.xlabel(r'$t \;(s)$')
+    plt.ylabel(r'$p_\theta \; (\text{kg.m}^2)$')
+    
+    plt.subplot(1,3,2)
+    plt.title(r"Moments conjugués en fonction du temps")
+    plt.plot(t, p_phi)
+    plt.xlabel(r'$t \;(s)$')
+    plt.ylabel(r'$p_\phi \; (\text{kg.m}^2)$')
+    
+    plt.subplot(1,3,3)
+    plt.plot(t, p_psi)
+    plt.xlabel(r'$t \;(s)$')
+    plt.ylabel(r'$p_\psi \; (\text{kg.m}^2)$')
+    plt.show()
+
+    return None

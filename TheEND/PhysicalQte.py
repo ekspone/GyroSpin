@@ -23,7 +23,7 @@ def Momentum_Weight(the, phi, psi, params):
     return momentum_the
 
 
-def Momentum_Fe(the, phi, psi, params):
+def Momentum_Fe(t, the, phi, psi, params):
     '''Moment associé à la force centrifuge.'''
     m, x0, p, f = params[0], params[-3], params[-2], params[-1]
     w = 2*np.pi*f
@@ -37,7 +37,6 @@ def Conjugated_Momentums(the, phi, psi, the_d, phi_d, psi_d, params):
     '''Moments conjugés.'''
     m, h, J1, J3 = params[1],  params[2], params[3],  params[4]
     J1_ = J1 + m*(h**2)
-    w = 2*np.pi*f
     p_psi = J3 * (psi_d + phi_d*np.cos(the))
     p_phi = J1_ * (np.sin(the)**2) * phi_d + np.cos(the)*p_psi
     p_the = J1_ * the_d
@@ -101,7 +100,7 @@ def Get_Path(t, the, phi, psi):
 def Gyro_Carac_Values(params, CI):
     '''Calcule les fréquences et pulsations théoriques attendues'''
     p_psi0 = p_psi_exp(params, CI)
-    m, h, x0, p, f = params[1], params[2], params[-3], params[-2], params[-1]
+    g, m, h, J1, J3, x0, p, f = params
     omega_f = 2 * np.pi * f
 
     omega_L_th = m * g * h / (p_psi0)
@@ -120,14 +119,37 @@ def Gyro_Carac_Values(params, CI):
     rapport_freq = float(omega_L_th / omega_R_th)
     print(f'Rapport des pulsations Larmor/Rabi : {rapport_freq : >+20_.3f} \n')
         
-    print(f'Rapport Approx Gyroscopique : {0.5 * J3 * (omega_f**2) /  (m*g*h) : >+20_.3f} \n')
+    print(f'Rapport Approx Gyroscopique : {0.5 * J3 * ((2 * np.pi * CI[-1])**2) /  (m*g*h) : >+20_.3f} \n')
     
     return None
 
 
+def Hamiltonian_Terms(t, the, phi, psi, the_d, phi_d, psi_d, params, forcing='FREE'):
+    '''Calcule les termes aparaissant dans l'Hamiltonien'''
+
+    g, m, h, J1, J3, x0, p, f = params
+    w = 2*np.pi*f
+    J1_ = J1 + m*(h**2)
+    K = m * h * x0 * (w**2)
+    p_the, p_phi, p_psi = Conjugated_Momentums(the, phi, psi, the_d, phi_d, psi_d, params)
+    
+    Epp = m*g*h*np.cos(the)
+    Nutation = 0.5 * J1_ * (np.sin(the)**2) * (phi_d)**2
+    Ec_theta = (p_the**2) / (2 * J1_)
+    Ec_psi = (p_psi**2) / (2 * J3)
+    match forcing:
+        case 'FREE':
+            E_ext = 0
+        case 'XY':
+            E_ext = K*np.sin(the) * np.sin( w*t+p-phi )
+        case 'X':
+            E_ext = - K*np.sin(the) * sin(phi) * np.cos(w*t+p)
+    return Ec_the, Ec_psi, Nutation, Epp, E_ext
+
+
+
+
 # Rappel : g, m, h, J1, J3, x0, p, w = params
-
-
 
 
 

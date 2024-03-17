@@ -117,8 +117,49 @@ def dSdt_IVP(t, S, g, m, h, J1, J3, x0, p, w, J1_, K, p_psi, forcing):
             Identity(z3),
             psi_dd_Free(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, z1, z2, z3, p_psi, J1_, K),
             ])
- 
 
+
+def dSdt_ODEINT(S, t, g, m, h, J1, J3, x0, p, w, J1_, K, p_psi, forcing):
+    the, z1, phi, z2, psi, z3 = S
+    match forcing:
+        case 'X':
+            try:
+                return np.array([
+                Identity(z1),
+                the_dd_X(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, z1, z2, z3, p_psi, J1_, K),
+                Identity(z2),
+                phi_dd_X(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, z1, z2, z3, p_psi, J1_, K),
+                Identity(z3),
+                psi_dd_X(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, z1, z2, z3, p_psi, J1_, K),
+                ])
+            except:
+                return np.array([0,0,0,0,0,0])
+        case 'XY':
+            try:
+                return np.array([
+                Identity(z1),
+                the_dd_XY(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, z1, z2, z3, p_psi, J1_, K),
+                Identity(z2),
+                phi_dd_XY(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, z1, z2, z3, p_psi, J1_, K),
+                Identity(z3),
+                psi_dd_XY(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, z1, z2, z3, p_psi, J1_, K),
+                ])
+            except:
+                return np.array([0,0,0,0,0,0])
+        case 'FREE':
+            try:
+                return np.array([
+                Identity(z1),
+                the_dd_Free(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, z1, z2, z3, p_psi, J1_, K),
+                Identity(z2),
+                phi_dd_Free(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, z1, z2, z3, p_psi, J1_, K),
+                Identity(z3),
+                psi_dd_Free(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, z1, z2, z3, p_psi, J1_, K),
+                ])
+            except:
+                return np.array([0,0,0,0,0,0])
+
+'''
 def dSdt_ODEINT(S, t, g, m, h, J1, J3, x0, p, w, J1_, K, p_psi, forcing):
     the, z1, phi, z2, psi, z3 = S
     match forcing:
@@ -149,3 +190,4 @@ def dSdt_ODEINT(S, t, g, m, h, J1, J3, x0, p, w, J1_, K, p_psi, forcing):
             Identity(z3),
             psi_dd_Free(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, z1, z2, z3, p_psi, J1_, K),
             ])
+'''
