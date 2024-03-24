@@ -111,7 +111,7 @@ def Gyro_Carac_Values(params, CI):
     omega_R_th = -0.5 * np.cos(p) * (m * h * x0 * (omega_f**2)) / p_psi0
     #omega_R_th = -0.5 * np.cos(params_f[-2]) * ( (m*h)**3 * g**2 * x0) / (p_psi_exp**3)
     
-    print(f'Rabi Frequency (th) : {omega_R_th : >+20_.3f}')
+    print(f'Rabi Pulsation (th) : {omega_R_th : >+20_.3f}')
     print(f'Rabi Period (th) : {2 * np.pi / omega_R_th : >+20_.3f}')
     print(f'Temps de montée (th) : {np.pi / omega_R_th : >+20_.3f} \n')
     
@@ -144,7 +144,7 @@ def Hamiltonian_Terms(t, the, phi, psi, the_d, phi_d, psi_d, params, forcing='FR
             E_ext = K*np.sin(the) * np.sin( w*t+p-phi )
         case 'X':
             E_ext = - K*np.sin(the) * sin(phi) * np.cos(w*t+p)
-    return Ec_the, Ec_psi, Nutation, Epp, E_ext
+    return Ec_theta, Ec_psi, Nutation, Epp, E_ext
 
 
 
