@@ -80,8 +80,12 @@ def Cobra(dt1, dt2, dt3, CI, params, forcing='XY', list_solving_method=['RK23'] 
     T2 = T1 +dt2
     T3 = T2 + dt3
     t1, the1, phi1, psi1, the_d1, phi_d1, psi_d1 = Solve_Gyro(0, T1, CI, params, solving_method=list_solving_method[0], forcing=forcing, nb_points=list_nb_points[0])
-    t2, the2, phi2, psi2, the_d2, phi_d2, psi_d2 = Solve_Gyro(T1, T2, CI, params, solving_method=list_solving_method[1], forcing='FREE', nb_points=list_nb_points[1])
-    t3, the3, phi3, psi3, the_d3, phi_d3, psi_d3 = Solve_Gyro(T2, T3, CI, params, solving_method=list_solving_method[2], forcing=forcing, nb_points=list_nb_points[2])
+    CI1 = [the1[-1], the_d1[-1], phi1[-1], phi_d1[-1], psi1[-1], psi_d1[-1]]
+    t2, the2, phi2, psi2, the_d2, phi_d2, psi_d2 = Solve_Gyro(T1, T2, CI1, params, solving_method=list_solving_method[1], forcing='FREE', nb_points=list_nb_points[1])
+    CI2 = [the2[-1], the_d2[-1], phi2[-1], phi_d2[-1], psi2[-1], psi_d2[-1]]
+    params2 = params
+    params[-2] = 0
+    t3, the3, phi3, psi3, the_d3, phi_d3, psi_d3 = Solve_Gyro(T2, T3, CI2, params2, solving_method=list_solving_method[2], forcing=forcing, nb_points=list_nb_points[2])
 
     t = np.concatenate([t1, t2, t3])
     the = np.concatenate([the1, the2, the3])
