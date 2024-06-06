@@ -73,6 +73,17 @@ def Rabi_Chevron(exc_freq, tab_t_burst, params, CI, solving_method='RK23', forci
     return tab_theta, list_the, list_t
 
 
+def Rabi_Chevron_Maker(exc_freq, t_burst, params, CI, solving_method='RK23', forcing='XY'):
+    '''
+    Sam's work
+    '''
+        
+    params[-1] = exc_freq
+    _, theta, _, _, _, _, _ = Solve_Gyro(0, t_burst, CI, params, solving_method=solving_method, forcing=forcing)
+    return theta[-1]
+
+
+
 def Cobra(dt1, dt2, dt3, CI, params, forcing='XY', list_solving_method=['RK23'] * 3, list_nb_points=[1000] * 3):
     '''Sam's work.'''
     
