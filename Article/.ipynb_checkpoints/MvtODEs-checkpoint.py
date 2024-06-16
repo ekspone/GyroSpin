@@ -7,24 +7,26 @@ from IPython.display import HTML
 
 
 def the_dd_Free(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, the_d, phi_d, psi_d, p_psi, J1_, K):
-    '''Docstring to do.'''
+    '''Docstring to do.
     den = np.sqrt( the_d**2 + (np.sin(the) * phi_d)**2 )
     if den !=0:
         A = m*g*h*np.cos(the) * the_d * 0.1 / den
     else:
         A = 0
-    the_dd_free = (m*g*h - phi_d * p_psi)*np.sin(the) / J1_ + 0.5 * np.sin(2*the)*(phi_d**2) - A / J1_
+    '''
+    the_dd_free = (m*g*h - phi_d * p_psi)*np.sin(the) / J1_ + 0.5 * np.sin(2*the)*(phi_d**2) #- A / J1_
     return the_dd_free
 
 
 def phi_dd_Free(t, g, h, m, x0, p, w, J1, J3, the, phi, psi, the_d, phi_d, psi_d, p_psi, J1_, K):
-    '''Docstring to do.'''
+    '''Docstring to do.
     den = np.sqrt( the_d**2 + (np.sin(the) * phi_d)**2 )
     if den != 0:
         B = m*g*h*np.cos(the) * phi_d * 0.1 / den 
     else:
         B = 0
-    phi_dd_free = - (2*the_d*phi_d / np.tan(the)) + (p_psi*the_d)/(J1_ * np.sin(the)) - B / J1_
+    '''
+    phi_dd_free = - (2*the_d*phi_d / np.tan(the)) + (p_psi*the_d)/(J1_ * np.sin(the)) #- B / J1_
     return phi_dd_free
 
 
