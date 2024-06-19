@@ -172,3 +172,24 @@ def Rabi_Assym(t_burst, delta, f_R, f_L):
             tab_Rabi_th[i, j] = num / den
     return tab_Rabi_th
 
+
+def Larmor_Freq_Modified_Moins(delta, f_L, t):
+    return f_L - delta * np.sinc(delta * t / np.pi)
+
+
+def Larmor_Freq_Modified_Plus(delta, f_L, t):
+    return f_L+ delta * np.sinc(delta * t / np.pi)
+
+
+def Rabi_Assym_DL(t_burst, delta, f_R, f_L):
+    tab_Rabi_th = np.zeros((len(delta), len(t_burst)))
+    for i in range(len(delta)):
+        for j in range(len(t_burst)):
+            f_L_mod = Larmor_Freq_Modified_Moins(delta[i], f_L, t_burst[j])
+            f_R_mod = Rabi_Freq_Modified(delta[i], f_R, f_L_mod)
+            pulsation = 2 * np.pi * np.sqrt(delta[i]**2 + f_R_mod**2) / 2
+            num = (f_R_mod**2) * np.cos( pulsation * t_burst[j] )**2
+            den = f_R_mod**2 + delta[i]**2
+            tab_Rabi_th[i, j] = num / den
+    return tab_Rabi_th
+
