@@ -48,7 +48,7 @@ def p_psi_exp(params, CI):
     return p_psi0
 
 
-def Get_Path(t, the, phi, psi):
+def Get_Path(t, the, phi, psi, file_name="Gyro3D.png"):
     '''Génére la trajectoire du Gyro.'''
 
     x_t, y_t, z_t = Gyro_Bloch(the, phi, psi)
@@ -57,25 +57,36 @@ def Get_Path(t, the, phi, psi):
     f = len(t)
 
     layout = go.Layout(
-        title=r"Plot Title",
+        template="none",
+        font=dict(family="Droid Serif"),
         scene=dict(
             xaxis_title=r"x",
             yaxis_title=r"y",
             zaxis_title=r"z",
             aspectratio=dict(x=1, y=1, z=1),
-            camera_eye=dict(x=1.2, y=1.2, z=1.2),
+            camera_eye=dict(x=1.2, y=1.2, z=1.2),       
         ),
     )
 
     fig = go.Figure(layout=layout)
-    fig.add_scatter3d(x=[0], y=[0], z=[0])
+                    
+    fig.add_scatter3d(x=[0], y=[0], z=[0], 
+                      name="Contact point")
+    
     fig.add_scatter3d(
         x=x_t[i:f],
         y=y_t[i:f],
         z=z_t[i:f],
+        name="Path",
         mode="lines",
-        line=dict(color="green", width=2),
+        line=dict(color=t, colorscale='Viridis', showscale=True),
     )
+
+    fig.update_layout(legend=dict(
+        yanchor="top",
+        y=0.99,
+        xanchor="left",
+        x=0.01))
 
     fig.update_layout(
         scene=dict(
@@ -90,9 +101,10 @@ def Get_Path(t, the, phi, psi):
             ),
         )
     )
+    fig.update_traces()
+    fig.show()
+    fig.write_image(file_name)
 
-    path = HTML(fig.to_html(default_width=1000, default_height=600))
-    return path
 
 
 def Gyro_Carac_Values(params, CI):
