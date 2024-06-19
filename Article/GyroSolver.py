@@ -4,6 +4,7 @@ import sympy as smp
 from scipy.integrate import odeint, solve_ivp
 import plotly.graph_objects as go
 from IPython.display import HTML
+import time
 
 from MvtODEs import*
 from PhysicalQte import*
@@ -169,26 +170,34 @@ def Frequency_Sweep_MAX(exc_freq, params, CI, tf=80, solving_method='RK23', plot
 def Plot_Gyro_Angles(t, the, phi, psi):
     '''Sam's work.'''
 
-    plt.figure(figsize=[16, 5])
-    plt.subplot(1,3,1)
+    
+    plt.figure(figsize=[3, 3], dpi = 300)
     plt.grid()
     plt.plot(t, the * 180 / np.pi, 'b')
     plt.xlabel(r'$t \;(s)$')
     plt.ylabel(r'$\theta \; (\text{deg})$')
-    
-    plt.subplot(1,3,2)
+    plt.savefig(r"./Graphes/GyroAngles-Free-theta.png", bbox_inches="tight")
+    plt.close()
+    print("Angle ϴ : fait")
+
+    plt.figure(figsize=[3, 3], dpi = 300)
     plt.grid()
-    plt.title(r"Angles d'Euler en fonction du temps")
     plt.plot(t, phi * 180 / np.pi, 'r')
     plt.xlabel(r'$t \;(s)$')
     plt.ylabel(r'$\phi \; (\text{deg})$')
+    plt.savefig(r"./Graphes/GyroAngles-Free-phi.png", bbox_inches="tight")
+    plt.close()
+    print("Angle 𝜑 : fait")
+
     
-    plt.subplot(1,3,3)
+    plt.figure(figsize=[3, 3], dpi = 300)
     plt.grid()
     plt.plot(t, psi * 180 / np.pi, 'k')
     plt.xlabel(r'$t \;(s)$')
     plt.ylabel(r'$\psi \; (\text{deg})$')
-    plt.show()
+    plt.savefig("./Graphes/GyroAngles-Free-psi.png", bbox_inches="tight")
+    plt.close()
+    print("Angle 𝛙 : fait")
 
     return None
 
@@ -196,26 +205,33 @@ def Plot_Gyro_Angles(t, the, phi, psi):
 def Plot_Gyro_Speed_Angles(t, the_d, phi_d, psi_d):
     '''Sam's work.'''
 
-    plt.figure(figsize=[16, 5])
-    plt.subplot(1,3,1)
+    plt.figure(figsize=[3, 3], dpi = 300)    
     plt.grid()
     plt.plot(t, the_d * 180 / np.pi, 'b')
     plt.xlabel(r'$t \;(s)$')
     plt.ylabel(r'$\dot{\theta} \; (\text{deg})$')
+    plt.savefig("./Graphes/GyroSpeed-Free-theta.png", bbox_inches="tight")
+    plt.close()
+    print("Vitesse ϴ : fait")
     
-    plt.subplot(1,3,2)
+    plt.figure(figsize=[3, 3], dpi = 300)
     plt.grid()
-    plt.title(r"Dérivées temporelles des angles d'Euler en fonction du temps")
     plt.plot(t, phi_d * 180 / np.pi, 'r')
     plt.xlabel(r'$t \;(s)$')
     plt.ylabel(r'$\dot{\phi} \; (\text{deg})$')
+    plt.savefig(r"./Graphes/GyroSpeed-Free-phi.png", bbox_inches="tight")
+    plt.close()
+    print("Vitesse 𝜑 : fait")
     
-    plt.subplot(1,3,3)
+    plt.figure(figsize=[3, 3], dpi = 300)
     plt.grid()
     plt.plot(t, psi_d * 180 / np.pi, 'k')
     plt.xlabel(r'$t \;(s)$')
     plt.ylabel(r'$\dot{\psi} \; (\text{deg})$')
-    plt.show()
+    plt.savefig("./Graphes/GyroSpeed-Free-psi.png", bbox_inches="tight")
+    plt.close()
+    print("Vitesse 𝛙 : fait")
+    
 
     return None
 
@@ -223,26 +239,32 @@ def Plot_Gyro_Speed_Angles(t, the_d, phi_d, psi_d):
 def Plot_Gyro_Momentum(t, p_the, p_phi, p_psi):
     '''Sam's work.'''
 
-    plt.figure(figsize=[16, 5])
-    plt.subplot(1,3,1)
+    plt.figure(figsize=[3, 3], dpi = 300)
     plt.grid()
     plt.plot(t, p_the, 'b')
     plt.xlabel(r'$t \;(s)$')
     plt.ylabel(r'$p_\theta \; (\text{kg.m}^2)$')
+    plt.savefig("./Graphes/GyroMoment-Free-theta.png", bbox_inches="tight")
+    plt.close()
+    print("Moment ϴ : fait")
     
-    plt.subplot(1,3,2)
+    plt.figure(figsize=[3, 3], dpi = 300)
     plt.grid()
-    plt.title(r"Moments conjugués en fonction du temps")
     plt.plot(t, p_phi, 'r')
     plt.xlabel(r'$t \;(s)$')
     plt.ylabel(r'$p_\phi \; (\text{kg.m}^2)$')
+    plt.savefig(r"./Graphes/GyroMoment-Free-phi.png", bbox_inches="tight")
+    plt.close()
+    print("Moment 𝜑 : fait")
     
-    plt.subplot(1,3,3)
+    plt.figure(figsize=[3, 3], dpi = 300)
     plt.grid()
     plt.plot(t, p_psi, 'k')
     plt.xlabel(r'$t \;(s)$')
     plt.ylabel(r'$p_\psi \; (\text{kg.m}^2)$')
-    plt.show()
+    plt.savefig("./Graphes/GyroMoment-Free-psi.png", bbox_inches="tight")
+    plt.close()
+    print("Moment 𝛙 : fait")
 
     return None
 
