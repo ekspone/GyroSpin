@@ -34,8 +34,9 @@ def Gyro_Solver(tspan, CI, params, forcing='Free'):
 
     fastprob = de.jit(prob)
 
-    sol = de.solve(fastprob, de.AutoVern7(de.Rodas5()), abstol = 1e-5, reltol = 1e-5, maxiters=np.inf, alg_hints = ['stiff'])
-    #sol = de.solve(fastprob#, de.Tsit5(), abstol = 1e-8, reltol = 1e-8, maxiters=np.inf)#, alg_hints = ['stiff'])
+    #sol = de.solve(fastprob, de.AutoVern7(de.Rodas5()), abstol = 1e-5, reltol = 1e-5, maxiters=np.inf, alg_hints = ['stiff'])
+
+    sol = de.solve(fastprob, de.AutoVern7(de.Rodas5()), abstol = 1e-3, reltol = 1e-3, maxiters=np.inf, alg_hints = ['stiff'])
 
     sols_Julia = de.stack(sol.u)
     t = np.array(sol.t)
